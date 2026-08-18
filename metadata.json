@@ -1,0 +1,6 @@
+{
+  "name": "AgroPlan CI",
+  "description": "Solution numérique d'accompagnement des producteurs de cacao et de diversification agricole en Côte d'Ivoire.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

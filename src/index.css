@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-primary: #5D4037;
+    --color-primary-dark: #3E2723;
+    --color-primary-light: #8D6E63;
+    --color-primary-surface: #EFEBE9;
+    
+    --color-secondary: #2E7D32;
+    --color-secondary-dark: #1B5E20;
+    --color-secondary-light: #4CAF50;
+    --color-secondary-surface: #E8F5E9;
+    
+    --earth-brown: #5D4037;
+    --primary-green: #2E7D32;
+    --light-green: #81C784;
+    --banana-yellow: #FBC02D;
+    --bg-light: #F9F8F6;
+  }
+
+  body {
+    font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #F9F8F6;
+    color: #2D2421;
+  }
+}
+
+/* Custom smooth scroll and scrollbar styling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom pulse animations for audio reader and status indicators */
+@keyframes audioPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+
+.animate-audio-pulse {
+  animation: audioPulse 1.8s infinite ease-in-out;
+}
+
+/* FontAwesome and icon badge utilities */
+.icon-badge-primary {
+  background-color: #EFEBE9;
+  color: #5D4037;
+  border-color: #D7CCC8;
+}
+
+.icon-badge-secondary {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  border-color: #C8E6C9;
+}
+
+
