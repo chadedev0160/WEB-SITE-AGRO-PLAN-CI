@@ -52,19 +52,29 @@ export const PartnersSection: React.FC<PartnersProps> = ({ onNavigate }) => {
 
             <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <button
+                onClick={() => window.open('/dashboard', '_blank')}
+                className="inline-flex items-center justify-center gap-2 bg-[#2E7D32] hover:bg-[#236327] text-white px-6 py-3.5 rounded-full font-bold text-sm shadow-md transition-all cursor-pointer group"
+                title="Ouvrir la console de supervision dans une nouvelle page"
+              >
+                <i className="fa-solid fa-chart-line text-sm text-emerald-200 group-hover:scale-110 transition-transform"></i>
+                <span>Ouvrir le Dashboard (Nouvel Onglet)</span>
+                <i className="fa-solid fa-arrow-up-right-from-square text-xs opacity-80"></i>
+              </button>
+
+              <button
                 onClick={() => onNavigate('ngo-portal')}
-                className="inline-flex items-center justify-center gap-2 bg-[#5D4037] hover:bg-[#4E342E] text-white px-6 py-3.5 rounded-full font-bold text-sm shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 bg-[#5D4037] hover:bg-[#4E342E] text-white px-5 py-3.5 rounded-full font-bold text-sm shadow-sm transition-all cursor-pointer"
               >
                 <i className="fa-solid fa-building-ngo text-sm"></i>
-                <span>Portail Inscription ONG & Institutions</span>
+                <span>Portail Partenaire ONG</span>
               </button>
 
               <button
                 onClick={() => onNavigate('contact')}
-                className="inline-flex items-center justify-center gap-2 bg-white text-stone-800 border border-stone-300 hover:border-[#5D4037] hover:text-[#5D4037] px-5 py-3.5 rounded-full font-semibold text-sm transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 bg-white text-stone-800 border border-stone-300 hover:border-[#5D4037] hover:text-[#5D4037] px-4 py-3.5 rounded-full font-semibold text-sm transition-all cursor-pointer"
               >
                 <i className="fa-regular fa-envelope text-sm"></i>
-                <span>Nous contacter</span>
+                <span>Contact</span>
               </button>
             </div>
           </ScrollReveal>

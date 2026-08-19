@@ -3,57 +3,13 @@ import { PageRoute, PartnerAccount, OrgType, LocalLanguage } from '../types';
 import { useToast } from '../context/ToastContext';
 import { NgoDashboardApp } from './NgoDashboardApp';
 import { AgroPlanLogo } from './AgroPlanLogo';
+import { DEMO_PARTNER_ACCOUNTS } from '../data/partnersData';
 
 interface NgoPortalPageProps {
   onNavigate: (route: PageRoute, sectionId?: string) => void;
   onDashboardActiveChange?: (active: boolean) => void;
+  initialAccount?: PartnerAccount | null;
 }
-
-// Preset verified partners for quick testing / one-click demo
-const DEMO_PARTNER_ACCOUNTS: PartnerAccount[] = [
-  {
-    id: 'ngo-anader',
-    orgName: 'ANADER - Délégation Régionale Nawa',
-    orgType: 'Institution Publique / ANADER',
-    contactPerson: 'Dr. Kouassi Koffi Sylvain (Chef de Zone)',
-    email: 'nawa.direction@anader.ci',
-    phone: '+225 27 34 71 00 00',
-    region: 'Soubré & Région de la Nawa',
-    producerCount: 480,
-    registrationDate: '10 Jan 2026',
-    badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
-    logoEmoji: '🏛️',
-    description: 'Programme national de vulgarisation agroforestière et de certification de zéro-déforestation pour la filière cacao ivoirienne.',
-  },
-  {
-    id: 'ngo-solidarite',
-    orgName: 'ONG Solidarité Forêt & Cacao Durable',
-    orgType: 'ONG Environnementale',
-    contactPerson: 'Mme Bamba Fatoumata (Coordinatrice RSE)',
-    email: 'contact@foret-cacao-durable.org',
-    phone: '+225 07 44 88 12 30',
-    region: 'San-Pédro, Sassandra & Bas-Sassandra',
-    producerCount: 320,
-    registrationDate: '15 Jan 2026',
-    badgeColor: 'bg-emerald-100 text-[#2E7D32] border-emerald-300',
-    logoEmoji: '🌱',
-    description: 'Accompagnement de 320 familles de producteurs dans la régénération forestière par le Framiré, l\'Akpi et les cultures nourricières.',
-  },
-  {
-    id: 'ngo-coop-union',
-    orgName: 'Union des Coopératives Cacaoyères du Gôh (UCCG)',
-    orgType: 'Coopérative Faitière',
-    contactPerson: 'M. Gnahoré Jean-Baptiste (Directeur Technique)',
-    email: 'direction@uccg-ci.org',
-    phone: '+225 05 12 34 56 78',
-    region: 'Gagnoa & Région du Gôh',
-    producerCount: 650,
-    registrationDate: '01 Fév 2026',
-    badgeColor: 'bg-stone-800 text-white border-stone-900',
-    logoEmoji: '🤝',
-    description: 'Supervision et mise en conformité de 650 planteurs avec géoréférencement exhaustif des parcelles pour l\'exportation européenne.',
-  },
-];
 
 export const NgoPortalPage: React.FC<NgoPortalPageProps> = ({
   onNavigate,
@@ -257,32 +213,57 @@ export const NgoPortalPage: React.FC<NgoPortalPageProps> = ({
                 Sélectionnez une organisation partenaire pré-configurée pour visualiser le tableau de bord en direct.
               </p>
             </div>
+
+            <button
+              onClick={() => window.open('/dashboard', '_blank')}
+              className="self-start sm:self-auto bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-extrabold text-xs px-4 py-2.5 rounded-full shadow-md transition-all flex items-center gap-2 cursor-pointer shrink-0"
+              title="Ouvrir le dashboard directement dans un nouvel onglet"
+            >
+              <i className="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+              <span>Ouvrir sur une Autre Page</span>
+            </button>
           </div>
 
           <div className="grid sm:grid-cols-3 gap-4">
             {DEMO_PARTNER_ACCOUNTS.map((acc) => (
-              <button
+              <div
                 key={acc.id}
-                onClick={() => handleActivateAccount(acc)}
-                className="bg-white/10 hover:bg-white/20 border border-white/15 p-4 rounded-2xl text-left transition-all group cursor-pointer space-y-2"
+                className="bg-white/10 hover:bg-white/15 border border-white/15 p-4 rounded-2xl transition-all group space-y-3 flex flex-col justify-between"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl">{acc.logoEmoji}</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
-                    {acc.producerCount} Planteurs
-                  </span>
-                </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">
-                    {acc.orgName}
-                  </h4>
-                  <p className="text-[10px] text-stone-300 mt-0.5">{acc.region}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl">{acc.logoEmoji}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                      {acc.producerCount} Planteurs
+                    </span>
+                  </div>
+                  <div className="mt-2">
+                    <h4 className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">
+                      {acc.orgName}
+                    </h4>
+                    <p className="text-[10px] text-stone-300 mt-0.5">{acc.region}</p>
+                  </div>
                 </div>
-                <div className="pt-1 flex items-center gap-1 text-[11px] font-bold text-emerald-300">
-                  <span>Accéder au Dashboard</span>
-                  <i className="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+
+                <div className="pt-2 border-t border-white/10 flex items-center gap-2">
+                  <button
+                    onClick={() => window.open('/dashboard', '_blank')}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold py-2 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                    title="Ouvrir ce compte dans un nouvel onglet"
+                  >
+                    <span>Autre Page</span>
+                    <i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                  </button>
+
+                  <button
+                    onClick={() => handleActivateAccount(acc)}
+                    className="bg-white/10 hover:bg-white/25 text-stone-200 hover:text-white text-[11px] font-semibold py-2 px-3 rounded-xl transition-colors cursor-pointer"
+                    title="Ouvrir dans cette fenêtre"
+                  >
+                    <span>Ici</span>
+                  </button>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>
@@ -483,25 +464,45 @@ export const NgoPortalPage: React.FC<NgoPortalPageProps> = ({
 
             <div className="space-y-3">
               {DEMO_PARTNER_ACCOUNTS.map((acc) => (
-                <button
+                <div
                   key={acc.id}
-                  onClick={() => {
-                    setIsLoginModalOpen(false);
-                    handleActivateAccount(acc);
-                  }}
-                  className="w-full p-4 rounded-2xl border border-stone-200 hover:border-[#2E7D32] hover:bg-emerald-50/50 transition-all text-left flex items-center justify-between group cursor-pointer"
+                  className="p-3.5 rounded-2xl border border-stone-200 hover:border-[#2E7D32] hover:bg-emerald-50/40 transition-all flex items-center justify-between gap-3"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{acc.logoEmoji}</span>
-                    <div>
-                      <h4 className="text-xs font-bold text-stone-900 group-hover:text-[#2E7D32]">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-2xl shrink-0">{acc.logoEmoji}</span>
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-bold text-stone-900 truncate">
                         {acc.orgName}
                       </h4>
                       <p className="text-[11px] text-stone-500">{acc.region} • {acc.producerCount} planteurs</p>
                     </div>
                   </div>
-                  <i className="fa-solid fa-chevron-right text-xs text-stone-400 group-hover:text-[#2E7D32]"></i>
-                </button>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      onClick={() => {
+                        setIsLoginModalOpen(false);
+                        window.open('/dashboard', '_blank');
+                      }}
+                      className="bg-[#2E7D32] hover:bg-[#236327] text-white text-[11px] font-bold px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1 cursor-pointer shadow-xs"
+                      title="Ouvrir dans une nouvelle page"
+                    >
+                      <span>Autre page</span>
+                      <i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setIsLoginModalOpen(false);
+                        handleActivateAccount(acc);
+                      }}
+                      className="bg-stone-100 hover:bg-stone-200 text-stone-700 text-[11px] font-semibold px-2.5 py-1.5 rounded-xl transition-colors cursor-pointer"
+                      title="Ouvrir ici"
+                    >
+                      Ici
+                    </button>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

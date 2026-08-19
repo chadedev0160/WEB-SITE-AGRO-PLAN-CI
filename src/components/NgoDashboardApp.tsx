@@ -34,6 +34,7 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
 
   // Add Producer Modal
   const [isAddFarmerOpen, setIsAddFarmerOpen] = useState(false);
+  const [isNgoCodeModalOpen, setIsNgoCodeModalOpen] = useState(false);
   const [newFarmer, setNewFarmer] = useState({
     farmerCardCode: `CI-CCC-2026-${Math.floor(10000 + Math.random() * 90000)}`,
     name: '',
@@ -85,6 +86,14 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
   };
 
   // Add Farmer Handler
+  const isDuplicateCardCode = producers.some(
+    (p) => p.farmerCardCode.trim().toLowerCase() === newFarmer.farmerCardCode.trim().toLowerCase()
+  );
+
+  const existingDuplicateProducer = producers.find(
+    (p) => p.farmerCardCode.trim().toLowerCase() === newFarmer.farmerCardCode.trim().toLowerCase()
+  );
+
   const handleAddFarmerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newFarmer.name.trim()) {
@@ -92,7 +101,20 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
       return;
     }
 
-    const cardCode = newFarmer.farmerCardCode.trim() || `CI-CCC-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    const cardCode = newFarmer.farmerCardCode.trim();
+    if (!cardCode) {
+      toast.error('Code requis', 'Veuillez saisir ou générer un code de carte planteur.');
+      return;
+    }
+
+    // Check duplicate
+    if (isDuplicateCardCode) {
+      toast.error(
+        'Code carte existant',
+        `Le code ${cardCode} est déjà assigné à ${existingDuplicateProducer?.name || 'un autre planteur'}.`
+      );
+      return;
+    }
 
     const created = {
       id: `p-${Date.now()}`,
@@ -178,11 +200,11 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
             </button>
           </div>
 
-          {/* Center: Live Organization Session Info */}
+          {/* Center: Live Organization Session Info & NGO Code */}
           <div className="hidden md:flex items-center gap-3 bg-[#15221A] px-4 py-1.5 rounded-full border border-emerald-900/50">
             <span className="text-base">{account.logoEmoji}</span>
             <div className="text-left leading-none">
-              <span className="text-xs font-bold text-white block truncate max-w-[220px]">
+              <span className="text-xs font-bold text-white block truncate max-w-[200px]">
                 {account.orgName}
               </span>
               <span className="text-[10px] text-emerald-300 flex items-center gap-1 font-medium">
@@ -190,7 +212,24 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
                 <span>{account.region}</span>
               </span>
             </div>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-1"></span>
+            
+            {/* NGO ID Code Pill with Copy Action */}
+            <div
+              onClick={() => {
+                navigator.clipboard?.writeText(account.ngoCode || 'ONG-ANADER-NAWA');
+                toast.success('Code ONG Copié !', `ID de connexion : ${account.ngoCode || 'ONG-ANADER-NAWA'}`);
+              }}
+              className="ml-1 bg-emerald-950/90 hover:bg-emerald-900 border border-amber-400/50 px-2 py-0.5 rounded-md flex items-center gap-1.5 cursor-pointer transition-colors"
+              title="Cliquer pour copier l'ID unique de connexion pour les planteurs"
+            >
+              <span className="text-[8px] uppercase text-emerald-300 font-bold">ID ONG :</span>
+              <span className="font-mono text-[10px] font-extrabold text-amber-300">
+                {account.ngoCode || 'ONG-ANADER-NAWA'}
+              </span>
+              <i className="fa-regular fa-copy text-[9px] text-amber-300/80"></i>
+            </div>
+
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>
           </div>
 
           {/* Right Controls : Quick Actions & Exit to Site */}
@@ -271,19 +310,39 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
 
             {/* Account Card in Sidebar */}
             {!sidebarCollapsed && (
-              <div className="bg-[#F8F9F5] p-3.5 rounded-2xl border border-stone-200/80 space-y-1.5">
+              <div className="bg-[#F8F9F5] p-3.5 rounded-2xl border border-stone-200/80 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${account.badgeColor}`}>
                     {account.orgType}
                   </span>
                   <span className="text-xs">{account.logoEmoji}</span>
                 </div>
-                <h4 className="text-xs font-bold text-stone-900 truncate leading-snug">
-                  {account.orgName}
-                </h4>
-                <p className="text-[11px] text-stone-500 truncate">
-                  {account.contactPerson}
-                </p>
+                <div>
+                  <h4 className="text-xs font-bold text-stone-900 truncate leading-snug">
+                    {account.orgName}
+                  </h4>
+                  <p className="text-[11px] text-stone-500 truncate">
+                    {account.contactPerson}
+                  </p>
+                </div>
+
+                {/* NGO Code Box */}
+                <div
+                  onClick={() => {
+                    navigator.clipboard?.writeText(account.ngoCode || 'ONG-ANADER-NAWA');
+                    toast.success('Code ONG Copié !', `ID de connexion : ${account.ngoCode || 'ONG-ANADER-NAWA'}`);
+                  }}
+                  className="bg-emerald-950 text-white p-2 rounded-xl border border-amber-400/40 space-y-0.5 cursor-pointer hover:bg-emerald-900 transition-colors"
+                  title="Code ID à communiquer aux planteurs de votre zone pour se connecter sur l'application mobile"
+                >
+                  <div className="flex items-center justify-between text-[8px] text-emerald-300 font-bold uppercase">
+                    <span>ID Unique Connexion</span>
+                    <i className="fa-regular fa-copy text-amber-300"></i>
+                  </div>
+                  <p className="font-mono text-xs font-black text-amber-300 tracking-wide">
+                    {account.ngoCode || 'ONG-ANADER-NAWA'}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -455,7 +514,19 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
               </h1>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
+              <button
+                onClick={() => setIsNgoCodeModalOpen(true)}
+                className="inline-flex items-center gap-1.5 bg-[#1E2D24] hover:bg-stone-900 text-amber-300 border border-amber-400/40 px-3.5 py-2 rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                title="Afficher le Code ONG unique pour connecter les planteurs à la plateforme"
+              >
+                <i className="fa-solid fa-key text-xs text-amber-400"></i>
+                <span>Code Planteurs</span>
+                <span className="hidden sm:inline-block font-mono bg-amber-400/20 text-amber-300 px-1.5 py-0.2 rounded text-[10px] ml-1">
+                  {account.ngoCode || 'ONG-ANADER-NAWA'}
+                </span>
+              </button>
+
               <button
                 onClick={() => setIsAddFarmerOpen(true)}
                 className="inline-flex items-center gap-1.5 bg-[#2E7D32] hover:bg-[#256628] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer"
@@ -479,6 +550,72 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
           {/* ================================================================= */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
+
+              {/* Dedicated Connection Code Banner for Farmers */}
+              <div className="bg-gradient-to-r from-[#1E2D24] via-[#1B3828] to-[#152B1E] text-white rounded-3xl p-5 sm:p-6 border border-emerald-500/30 shadow-md relative overflow-hidden">
+                <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-48 h-48 rounded-full bg-emerald-500/10 pointer-events-none blur-xl"></div>
+                
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
+                  <div className="space-y-2 max-w-xl">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-amber-400 text-stone-950 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-xs">
+                        <i className="fa-solid fa-shield-halved text-[9px]"></i>
+                        <span>ID Unique d'Affiliation Planteur</span>
+                      </span>
+                      <span className="text-[10px] text-emerald-300 font-medium hidden sm:inline">
+                        Connexion Application Mobile & Cartographie
+                      </span>
+                    </div>
+
+                    <h2 className="text-base sm:text-lg font-black text-white leading-snug">
+                      Transmettez votre Code ONG à vos Planteurs pour les synchroniser
+                    </h2>
+                    
+                    <p className="text-xs text-stone-300 leading-relaxed">
+                      Chaque planteur de votre zone ({account.region}) doit saisir ou scanner cet identifiant unique dans son application mobile <strong className="text-emerald-300">AgroPlan CI</strong> pour que ses parcelles, ses bilans d'ombrage et ses données RDUE remontent automatiquement dans votre tableau de bord.
+                    </p>
+                  </div>
+
+                  {/* Code Card with Copy & Share */}
+                  <div className="bg-[#0F1B14]/90 border border-amber-400/50 p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3 shrink-0 shadow-lg">
+                    <div className="text-center sm:text-left space-y-0.5">
+                      <span className="text-[9px] uppercase tracking-wider text-emerald-300 font-bold block">
+                        Code d'Accès ONG :
+                      </span>
+                      <span className="font-mono text-lg sm:text-xl font-black text-amber-300 tracking-wider block">
+                        {account.ngoCode || 'ONG-ANADER-NAWA'}
+                      </span>
+                      <span className="text-[9px] text-stone-400">Valide pour tous vos planteurs</span>
+                    </div>
+
+                    <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                      <button
+                        onClick={() => {
+                          navigator.clipboard?.writeText(account.ngoCode || 'ONG-ANADER-NAWA');
+                          toast.success(
+                            'Code ONG Copié !',
+                            `L'identifiant ${account.ngoCode || 'ONG-ANADER-NAWA'} est copié dans le presse-papier.`
+                          );
+                        }}
+                        className="flex-1 sm:flex-initial bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-xs"
+                        title="Copier le code"
+                      >
+                        <i className="fa-regular fa-copy text-xs"></i>
+                        <span>Copier</span>
+                      </button>
+
+                      <button
+                        onClick={() => setIsNgoCodeModalOpen(true)}
+                        className="flex-1 sm:flex-initial bg-emerald-800/80 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-emerald-600 transition-colors"
+                        title="Afficher le QR code et la fiche planteur"
+                      >
+                        <i className="fa-solid fa-qrcode text-xs text-amber-300"></i>
+                        <span>QR Code & Fiche</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               {/* 4 KPIs Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1266,6 +1403,47 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4 text-xs">
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-1.5 sm:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#1B5E20] font-bold flex items-center gap-1.5 text-xs">
+                      <i className="fa-solid fa-key text-[#2E7D32]"></i>
+                      <span>Identifiant Unique d'Affiliation Planteur (Code ONG)</span>
+                    </span>
+                    <span className="bg-[#2E7D32] text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                      Clé d'Accès Réseau
+                    </span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-lg border border-emerald-300">
+                    <div>
+                      <span className="font-mono text-base font-black text-stone-900 tracking-wider">
+                        {account.ngoCode || 'ONG-ANADER-NAWA'}
+                      </span>
+                      <p className="text-[11px] text-stone-500 mt-0.5">
+                        Code à fournir à tous les planteurs supervisés par votre entité pour la synchronisation de leurs parcelles.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          navigator.clipboard?.writeText(account.ngoCode || 'ONG-ANADER-NAWA');
+                          toast.success('Code Copié !', `Le code ${account.ngoCode || 'ONG-ANADER-NAWA'} est copié.`);
+                        }}
+                        className="bg-[#2E7D32] hover:bg-[#256628] text-white font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <i className="fa-regular fa-copy text-xs"></i>
+                        <span>Copier</span>
+                      </button>
+                      <button
+                        onClick={() => setIsNgoCodeModalOpen(true)}
+                        className="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <i className="fa-solid fa-qrcode text-xs text-[#2E7D32]"></i>
+                        <span>Fiche Planteur</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="p-4 bg-stone-50 rounded-xl space-y-1">
                   <span className="text-stone-500 font-medium">Nom de l'Organisation</span>
                   <p className="font-bold text-stone-900 text-sm">{account.orgName}</p>
@@ -1313,6 +1491,136 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
       </div>
 
       {/* ===================================================================== */}
+      {/* MODAL : FICHE & CODE D'AFFILIATION ONG POUR LES PLANTEURS             */}
+      {/* ===================================================================== */}
+      {isNgoCodeModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6 animate-in fade-in zoom-in duration-200 border border-stone-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 border border-amber-300 flex items-center justify-center font-bold text-lg">
+                  🔑
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase text-[#2E7D32] tracking-wider">
+                    Accès & Synchronisation Terrain
+                  </span>
+                  <h3 className="font-extrabold text-base text-stone-900">
+                    Code Unique ONG pour les Planteurs
+                  </h3>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsNgoCodeModalOpen(false)}
+                className="p-1.5 text-stone-400 hover:text-stone-700 rounded-xl hover:bg-stone-100 cursor-pointer"
+              >
+                <i className="fa-solid fa-xmark text-lg"></i>
+              </button>
+            </div>
+
+            {/* Main Code Presentation Card */}
+            <div className="bg-gradient-to-br from-[#1E2D24] to-[#15231B] text-white p-6 rounded-2xl border-2 border-amber-400 shadow-lg text-center space-y-3 relative overflow-hidden">
+              <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 w-28 h-28 bg-amber-400/10 rounded-full blur-lg pointer-events-none"></div>
+
+              <span className="text-[11px] font-bold text-emerald-300 uppercase tracking-widest block">
+                {account.orgName}
+              </span>
+
+              <div className="py-2">
+                <span className="text-[10px] text-stone-300 uppercase font-semibold block mb-1">
+                  Code Unique de Connexion Planteur :
+                </span>
+                <span className="font-mono text-2xl sm:text-3xl font-black text-amber-300 tracking-wider bg-black/40 px-4 py-2 rounded-xl inline-block border border-amber-400/60 shadow-inner">
+                  {account.ngoCode || 'ONG-ANADER-NAWA'}
+                </span>
+              </div>
+
+              <p className="text-xs text-stone-300">
+                Zone de couverture : <strong>{account.region}</strong>
+              </p>
+
+              <div className="pt-2 flex items-center justify-center gap-2">
+                <button
+                  onClick={() => {
+                    navigator.clipboard?.writeText(account.ngoCode || 'ONG-ANADER-NAWA');
+                    toast.success(
+                      'Code Copié !',
+                      `L'identifiant ${account.ngoCode || 'ONG-ANADER-NAWA'} est copié dans le presse-papier.`
+                    );
+                  }}
+                  className="bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all"
+                >
+                  <i className="fa-regular fa-copy text-xs"></i>
+                  <span>Copier le Code</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    toast.info('QR Code Planteur', 'QR Code de connexion prêt pour impression et affichage dans les coopératives.');
+                  }}
+                  className="bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer border border-white/20 transition-all"
+                >
+                  <i className="fa-solid fa-print text-xs text-amber-300"></i>
+                  <span>Imprimer l'Affiche</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Step by step guide for NGO agents & farmers */}
+            <div className="bg-[#F9F8F6] p-4 rounded-2xl border border-stone-200/80 space-y-3">
+              <h4 className="font-bold text-xs text-stone-900 uppercase tracking-wide flex items-center gap-1.5">
+                <i className="fa-solid fa-circle-info text-[#2E7D32]"></i>
+                <span>Comment vos planteurs utilisent ce code ?</span>
+              </h4>
+
+              <ol className="space-y-2.5 text-xs text-stone-600">
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-[#2E7D32] text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                    1
+                  </span>
+                  <span>
+                    Le planteur ouvre l'application mobile <strong>AgroPlan CI</strong> ou l'agent terrain l'assiste.
+                  </span>
+                </li>
+
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-[#2E7D32] text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                    2
+                  </span>
+                  <span>
+                    Lors de l'inscription ou de la connexion, il saisit le <strong>Code ONG : {account.ngoCode || 'ONG-ANADER-NAWA'}</strong>.
+                  </span>
+                </li>
+
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-[#2E7D32] text-white font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                    3
+                  </span>
+                  <span>
+                    Ses parcelles de cacao, son taux d'ombrage et sa carte officielle sont instantanément rattachés à votre espace de supervision.
+                  </span>
+                </li>
+              </ol>
+            </div>
+
+            {/* Footer buttons */}
+            <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs">
+              <span className="text-stone-500 text-[11px]">
+                Support technique : +225 27 20 00 00
+              </span>
+              <button
+                onClick={() => setIsNgoCodeModalOpen(false)}
+                className="bg-stone-900 hover:bg-black text-white px-5 py-2 rounded-xl font-bold transition-colors cursor-pointer"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===================================================================== */}
       {/* MODAL : AJOUT PRODUCTEUR                                              */}
       {/* ===================================================================== */}
       {isAddFarmerOpen && (
@@ -1336,10 +1644,24 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
 
             <form onSubmit={handleAddFarmerSubmit} className="space-y-4 text-xs">
               {/* Code Carte Planteur */}
-              <div className="bg-[#E8F5E9]/60 border border-emerald-300/80 p-3 rounded-2xl space-y-1.5">
+              <div
+                className={`p-3 rounded-2xl space-y-1.5 transition-colors border ${
+                  isDuplicateCardCode
+                    ? 'bg-red-50/90 border-red-300'
+                    : 'bg-[#E8F5E9]/60 border-emerald-300/80'
+                }`}
+              >
                 <div className="flex items-center justify-between">
-                  <label className="font-bold text-[#1B5E20] flex items-center gap-1.5">
-                    <i className="fa-solid fa-credit-card text-[#2E7D32]"></i>
+                  <label
+                    className={`font-bold flex items-center gap-1.5 ${
+                      isDuplicateCardCode ? 'text-red-800' : 'text-[#1B5E20]'
+                    }`}
+                  >
+                    <i
+                      className={`fa-solid ${
+                        isDuplicateCardCode ? 'fa-triangle-exclamation text-red-600' : 'fa-credit-card text-[#2E7D32]'
+                      }`}
+                    ></i>
                     <span>Code Carte de Planteur (Identifiant Unique) *</span>
                   </label>
                   <button
@@ -1353,20 +1675,45 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
                     className="text-[10px] font-bold text-[#2E7D32] hover:underline cursor-pointer flex items-center gap-1"
                   >
                     <i className="fa-solid fa-arrows-rotate text-[9px]"></i>
-                    <span>Générer un Code</span>
+                    <span>Générer un Nouveau Code</span>
                   </button>
                 </div>
-                <input
-                  type="text"
-                  required
-                  value={newFarmer.farmerCardCode}
-                  onChange={(e) => setNewFarmer({ ...newFarmer, farmerCardCode: e.target.value })}
-                  placeholder="Ex : CI-CCC-2026-08491"
-                  className="w-full p-2 bg-white rounded-xl border border-emerald-300 font-mono font-bold text-stone-900 outline-none focus:border-[#2E7D32]"
-                />
-                <p className="text-[10px] text-emerald-800">
-                  Format standard Conseil du Café-Cacao. Utilisé pour la traçabilité RDUE et les paiements.
-                </p>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    value={newFarmer.farmerCardCode}
+                    onChange={(e) => setNewFarmer({ ...newFarmer, farmerCardCode: e.target.value })}
+                    placeholder="Ex : CI-CCC-2026-08491"
+                    className={`w-full p-2.5 pr-8 bg-white rounded-xl border font-mono font-bold text-stone-900 outline-none transition-colors ${
+                      isDuplicateCardCode
+                        ? 'border-red-400 focus:border-red-600 focus:ring-1 focus:ring-red-300'
+                        : 'border-emerald-300 focus:border-[#2E7D32]'
+                    }`}
+                  />
+                  {isDuplicateCardCode ? (
+                    <i className="fa-solid fa-circle-xmark text-red-500 absolute right-3 top-1/2 -translate-y-1/2 text-sm"></i>
+                  ) : newFarmer.farmerCardCode.trim() ? (
+                    <i className="fa-solid fa-circle-check text-emerald-600 absolute right-3 top-1/2 -translate-y-1/2 text-sm"></i>
+                  ) : null}
+                </div>
+
+                {/* Real-time feedback message */}
+                {isDuplicateCardCode ? (
+                  <div className="bg-white/80 p-2 rounded-lg border border-red-200 text-[11px] text-red-700 flex items-start gap-1.5 animate-in fade-in duration-150">
+                    <i className="fa-solid fa-circle-exclamation text-xs mt-0.5 text-red-600 shrink-0"></i>
+                    <div>
+                      <p className="font-bold">Code déjà attribué à un autre planteur !</p>
+                      <p className="text-[10px] text-red-600">
+                        Ce code appartient déjà à <strong>{existingDuplicateProducer?.name}</strong> ({existingDuplicateProducer?.village} • {existingDuplicateProducer?.cooperative}). Veuillez générer ou saisir un autre code unique.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-[10px] text-emerald-800">
+                    Format standard Conseil du Café-Cacao. Utilisé pour la traçabilité RDUE et les paiements.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -1473,10 +1820,23 @@ export const NgoDashboardApp: React.FC<NgoDashboardAppProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#2E7D32] hover:bg-[#256628] text-white px-5 py-2 rounded-xl font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                  disabled={isDuplicateCardCode}
+                  className={`px-5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${
+                    isDuplicateCardCode
+                      ? 'bg-stone-300 text-stone-500 cursor-not-allowed opacity-70'
+                      : 'bg-[#2E7D32] hover:bg-[#256628] text-white cursor-pointer shadow-xs'
+                  }`}
                 >
-                  <i className="fa-solid fa-check text-xs"></i>
-                  <span>Créer la Carte & Enregistrer</span>
+                  <i
+                    className={`fa-solid ${
+                      isDuplicateCardCode ? 'fa-ban' : 'fa-check'
+                    } text-xs`}
+                  ></i>
+                  <span>
+                    {isDuplicateCardCode
+                      ? 'Code en doublon (Bloqué)'
+                      : 'Créer la Carte & Enregistrer'}
+                  </span>
                 </button>
               </div>
             </form>

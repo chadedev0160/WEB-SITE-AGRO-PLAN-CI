@@ -21,6 +21,7 @@ export const INITIAL_PRODUCERS_WITH_CARTOGRAPHY: SupervisedProducer[] = [
   {
     id: 'p-1',
     farmerCardCode: 'CI-CCC-2026-08491',
+    ngoAffiliationCode: 'ONG-ANADER-NAWA',
     name: 'Kouamé Yao Norbert',
     photoUrl: photoKouame,
     cooperative: 'Coopérative ECAM Meagui',
@@ -70,6 +71,7 @@ export const INITIAL_PRODUCERS_WITH_CARTOGRAPHY: SupervisedProducer[] = [
   {
     id: 'p-2',
     farmerCardCode: 'CI-CCC-2026-14902',
+    ngoAffiliationCode: 'ONG-ANADER-NAWA',
     name: 'Bamba Souleymane',
     photoUrl: photoBamba,
     cooperative: 'Coop-CA Soubré Progrès',
@@ -115,6 +117,7 @@ export const INITIAL_PRODUCERS_WITH_CARTOGRAPHY: SupervisedProducer[] = [
   {
     id: 'p-3',
     farmerCardCode: 'CI-CCC-2026-39184',
+    ngoAffiliationCode: 'ONG-SFCD-SANPEDRO',
     name: 'Gnahoré Jean-Pierre',
     photoUrl: photoGnahore,
     cooperative: 'Union des Planteurs de San-Pédro',
@@ -161,6 +164,7 @@ export const INITIAL_PRODUCERS_WITH_CARTOGRAPHY: SupervisedProducer[] = [
   {
     id: 'p-4',
     farmerCardCode: 'CI-CCC-2026-72019',
+    ngoAffiliationCode: 'COOP-UCCG-GAGNOA',
     name: 'Dame Affoué Bernadette',
     photoUrl: photoAffoue,
     cooperative: 'Coopérative Féminine de Divo',
@@ -207,6 +211,7 @@ export const INITIAL_PRODUCERS_WITH_CARTOGRAPHY: SupervisedProducer[] = [
   {
     id: 'p-5',
     farmerCardCode: 'CI-CCC-2026-90513',
+    ngoAffiliationCode: 'ONG-ANADER-NAWA',
     name: 'Traoré Mamadou',
     photoUrl: photoTraore,
     cooperative: 'Coop-CA Nawa Durable',

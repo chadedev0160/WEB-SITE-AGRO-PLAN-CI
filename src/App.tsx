@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PageRoute } from './types';
+import { PageRoute, PartnerAccount } from './types';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { ProblemSection } from './components/ProblemSection';
@@ -16,13 +16,16 @@ import { Footer } from './components/Footer';
 import { ContactPage } from './components/ContactPage';
 import { AppSimulator } from './components/AppSimulator';
 import { NgoPortalPage } from './components/NgoPortalPage';
+import { NgoDashboardApp } from './components/NgoDashboardApp';
+import { DEMO_PARTNER_ACCOUNTS } from './data/partnersData';
 import { ToastProvider } from './context/ToastContext';
 
 export default function App() {
   const [activeRoute, setActiveRoute] = useState<PageRoute>('landing');
   const [isNgoDashboardActive, setIsNgoDashboardActive] = useState(false);
+  const [standaloneAccount, setStandaloneAccount] = useState<PartnerAccount>(DEMO_PARTNER_ACCOUNTS[0]);
 
-  // Handle URL path initialization (/app, /contact, /ngo-portal)
+  // Handle URL path initialization (/app, /contact, /ngo-portal, /dashboard)
   useEffect(() => {
     const path = window.location.pathname;
     if (path === '/app') {
@@ -31,16 +34,31 @@ export default function App() {
       setActiveRoute('contact');
     } else if (path === '/ngo-portal') {
       setActiveRoute('ngo-portal');
+    } else if (path === '/dashboard') {
+      setActiveRoute('dashboard');
+      setIsNgoDashboardActive(true);
     } else {
       setActiveRoute('landing');
     }
 
     const handlePopState = () => {
       const p = window.location.pathname;
-      if (p === '/app') setActiveRoute('app');
-      else if (p === '/contact') setActiveRoute('contact');
-      else if (p === '/ngo-portal') setActiveRoute('ngo-portal');
-      else setActiveRoute('landing');
+      if (p === '/app') {
+        setActiveRoute('app');
+        setIsNgoDashboardActive(false);
+      } else if (p === '/contact') {
+        setActiveRoute('contact');
+        setIsNgoDashboardActive(false);
+      } else if (p === '/ngo-portal') {
+        setActiveRoute('ngo-portal');
+        setIsNgoDashboardActive(false);
+      } else if (p === '/dashboard') {
+        setActiveRoute('dashboard');
+        setIsNgoDashboardActive(true);
+      } else {
+        setActiveRoute('landing');
+        setIsNgoDashboardActive(false);
+      }
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -49,7 +67,9 @@ export default function App() {
 
   const handleNavigate = (route: PageRoute, sectionId?: string) => {
     setActiveRoute(route);
-    if (route !== 'ngo-portal') {
+    if (route === 'dashboard') {
+      setIsNgoDashboardActive(true);
+    } else if (route !== 'ngo-portal') {
       setIsNgoDashboardActive(false);
     }
 
@@ -77,7 +97,7 @@ export default function App() {
     <ToastProvider>
       <div className="min-h-screen bg-[#F5F7F2] text-[#213123] font-poppins selection:bg-emerald-200 selection:text-emerald-900 flex flex-col justify-between">
         {/* Header stays across public pages, hidden in standalone NGO dashboard */}
-        {!isNgoDashboardActive && (
+        {!isNgoDashboardActive && activeRoute !== 'dashboard' && (
           <Header activeRoute={activeRoute} onNavigate={handleNavigate} />
         )}
 
@@ -112,10 +132,24 @@ export default function App() {
               onDashboardActiveChange={setIsNgoDashboardActive}
             />
           )}
+
+          {activeRoute === 'dashboard' && (
+            <NgoDashboardApp
+              account={standaloneAccount}
+              onLogout={() => {
+                setIsNgoDashboardActive(false);
+                handleNavigate('ngo-portal');
+              }}
+              onNavigateToPublicSite={(route) => {
+                setIsNgoDashboardActive(false);
+                handleNavigate(route || 'landing');
+              }}
+            />
+          )}
         </main>
 
         {/* Footer stays across public pages, hidden in standalone NGO dashboard */}
-        {!isNgoDashboardActive && (
+        {!isNgoDashboardActive && activeRoute !== 'dashboard' && (
           <Footer onNavigate={handleNavigate} />
         )}
       </div>

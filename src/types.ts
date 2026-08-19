@@ -1,4 +1,4 @@
-export type PageRoute = 'landing' | 'app' | 'contact' | 'ngo-portal';
+export type PageRoute = 'landing' | 'app' | 'contact' | 'ngo-portal' | 'dashboard';
 
 export type LocalLanguage = 'fr' | 'baoule' | 'dioula' | 'bete';
 
@@ -6,6 +6,7 @@ export type OrgType = 'ONG Environnementale' | 'Coopérative Faitière' | 'Insti
 
 export interface PartnerAccount {
   id: string;
+  ngoCode: string; // Code ID unique de l'ONG/Institution pour relier les planteurs (ex: "ONG-ANADER-NAWA", "ONG-SFCD-SANPEDRO", "COOP-UCCG-GAGNOA")
   orgName: string;
   orgType: OrgType;
   contactPerson: string;
@@ -62,6 +63,7 @@ export interface FarmerProfile {
   name: string;
   phone: string;
   farmerCardCode: string; // Code unique de la Carte de Planteur (ex: CI-CCC-2024-88492)
+  ngoAffiliationCode?: string; // Code unique de l'ONG/Coopérative de rattachement (ex: ONG-ANADER-NAWA)
   coopMatricule: string;
   region: string;
   pin: string;
@@ -75,6 +77,7 @@ export interface FarmerProfile {
 export interface SupervisedProducer {
   id: string;
   farmerCardCode: string; // Identifiant officiel de la Carte de Planteur (format Conseil Café-Cacao)
+  ngoAffiliationCode?: string; // Code ONG unique liant le producteur au dashboard
   name: string;
   photoUrl: string; // Photo authentique du producteur
   village: string;

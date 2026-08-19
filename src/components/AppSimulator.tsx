@@ -54,6 +54,7 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
     name: 'Koffi Kouadio',
     phone: '07 08 09 10 11',
     farmerCardCode: 'CI-CCC-2024-88492',
+    ngoAffiliationCode: 'ONG-ANADER-NAWA',
     coopMatricule: 'COOP-SB-2024-88',
     region: 'Soubré (Nawa)',
     pin: '1234',
@@ -65,6 +66,7 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
   // Auth form inputs
   const [inputName, setInputName] = useState('');
   const [inputCardCode, setInputCardCode] = useState('CI-CCC-2024-88492');
+  const [inputNgoCode, setInputNgoCode] = useState('ONG-ANADER-NAWA');
   const [inputPhone, setInputPhone] = useState('');
   const [inputCoop, setInputCoop] = useState('');
   const [inputPin, setInputPin] = useState('');
@@ -187,16 +189,18 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
     e.preventDefault();
     if (!inputName || !inputPhone) return;
     const assignedCode = inputCardCode.trim() || `CI-CCC-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    const assignedNgo = inputNgoCode.trim() || 'ONG-ANADER-NAWA';
     setUser({
       name: inputName,
       phone: inputPhone,
       farmerCardCode: assignedCode,
+      ngoAffiliationCode: assignedNgo,
       coopMatricule: inputCoop || 'Indépendant',
       region: 'Soubré (Nawa)',
       pin: '1234',
       isRegistered: true,
     });
-    toast.success('Carte de Planteur Enregistrée !', `Code Carte officiel : ${assignedCode}`);
+    toast.success('Carte Planteur & Code ONG Enregistrés !', `Affilié à l'ONG/Institution : ${assignedNgo}`);
     setCurrentStep('pin_setup');
   };
 
@@ -204,7 +208,7 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
     e.preventDefault();
     if (inputPin === user.pin || inputPin === '1234') {
       setPinError('');
-      toast.success('Authentification réussie !', `Bienvenue ${user.name} (Carte ${user.farmerCardCode}).`);
+      toast.success('Authentification réussie !', `Bienvenue ${user.name} (Affiliation : ${user.ngoAffiliationCode || 'ONG-ANADER-NAWA'}).`);
       setCurrentStep('home');
     } else {
       setPinError('Code PIN incorrect. Essayez 1234.');
@@ -225,12 +229,12 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
             <div>
               <h2 className="text-xl font-serif font-black tracking-tight text-white">Agro Plan CI</h2>
               <p className="text-[11px] text-emerald-200 font-medium mt-0.5">
-                Identification & Suivi par Carte de Planteur
+                Identification Planteur & Code Unique ONG
               </p>
             </div>
 
             {/* Farmer Card Badge Preview */}
-            <div className="bg-emerald-950/60 border border-emerald-500/40 p-2.5 rounded-xl text-left text-[10px] space-y-1 w-full max-w-[240px]">
+            <div className="bg-emerald-950/60 border border-emerald-500/40 p-2.5 rounded-xl text-left text-[10px] space-y-1.5 w-full max-w-[240px]">
               <div className="flex items-center justify-between text-emerald-300 font-bold">
                 <span className="flex items-center gap-1">
                   <CreditCard className="w-3 h-3 text-amber-300" />
@@ -241,6 +245,13 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
                 </span>
               </div>
               <p className="font-mono text-amber-300 font-bold text-xs">{user.farmerCardCode}</p>
+              
+              <div className="flex items-center justify-between pt-1 border-t border-emerald-800/60 text-[9px]">
+                <span className="text-stone-300">Code ONG :</span>
+                <span className="font-mono font-bold text-amber-300 bg-black/40 px-1 rounded border border-amber-400/30">
+                  {user.ngoAffiliationCode || 'ONG-ANADER-NAWA'}
+                </span>
+              </div>
               <p className="text-stone-300 text-[9px]">{user.name} • {user.region}</p>
             </div>
           </div>
@@ -257,7 +268,7 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
               onClick={() => setCurrentStep('register')}
               className="w-full bg-emerald-800/80 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-[11px] border border-emerald-600 transition-colors cursor-pointer"
             >
-              Enregistrer une Nouvelle Carte
+              Enregistrer avec Code ONG
             </button>
           </div>
         </div>
@@ -274,11 +285,34 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
             </button>
             <div>
               <h3 className="font-bold text-sm text-stone-900">Enregistrer ma Carte</h3>
-              <p className="text-[10px] text-stone-500">Identification officielle Conseil Café-Cacao</p>
+              <p className="text-[10px] text-stone-500">Rattachement à votre ONG ou Institution de tutelle</p>
             </div>
           </div>
 
           <form onSubmit={handleRegisterSubmit} className="space-y-2.5 text-xs">
+            {/* NGO ID Code Field */}
+            <div className="bg-amber-50 border border-amber-300 p-2 rounded-xl space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="font-bold text-amber-950 text-[10px]">
+                  Code Unique de l'ONG (ID Partenaire) *
+                </label>
+                <span className="text-[8px] bg-amber-200 text-amber-900 font-bold px-1.5 py-0.2 rounded">
+                  Requis
+                </span>
+              </div>
+              <input
+                type="text"
+                required
+                placeholder="Ex: ONG-ANADER-NAWA"
+                value={inputNgoCode}
+                onChange={(e) => setInputNgoCode(e.target.value.toUpperCase())}
+                className="w-full p-2 bg-white border border-amber-300 rounded-lg text-xs font-mono font-extrabold text-stone-900 outline-none uppercase"
+              />
+              <p className="text-[9px] text-amber-800">
+                Code ID fourni par votre encadreur pour connecter votre profil au dashboard central.
+              </p>
+            </div>
+
             {/* Card Code Field */}
             <div className="bg-emerald-50 border border-emerald-300 p-2 rounded-xl space-y-1">
               <div className="flex items-center justify-between">
@@ -341,7 +375,7 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
               type="submit"
               className="w-full bg-[#2E7D32] hover:bg-[#256628] text-white py-2.5 rounded-xl font-bold text-xs shadow-md mt-2 cursor-pointer transition-colors"
             >
-              Valider mon Profil Planteur
+              Valider & Connecter à l'ONG
             </button>
           </form>
         </div>
@@ -365,19 +399,28 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
           </div>
 
           {/* Active Card Badge Banner */}
-          <div className="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#1E3A2B] text-amber-300 flex items-center justify-center font-bold text-xs">
-                <CreditCard className="w-4 h-4" />
+          <div className="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl space-y-1.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#1E3A2B] text-amber-300 flex items-center justify-center font-bold text-xs">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-stone-500 font-medium">Carte de Planteur :</p>
+                  <p className="font-mono font-bold text-xs text-[#1E3A2B]">{user.farmerCardCode}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] text-stone-500 font-medium">Carte de Planteur :</p>
-                <p className="font-mono font-bold text-xs text-[#1E3A2B]">{user.farmerCardCode}</p>
-              </div>
+              <span className="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded">
+                Active
+              </span>
             </div>
-            <span className="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded">
-              Active
-            </span>
+
+            <div className="pt-1 border-t border-emerald-200/80 flex items-center justify-between text-[10px]">
+              <span className="text-stone-600">ID Tutelle ONG :</span>
+              <span className="font-mono font-bold text-emerald-900 bg-emerald-100 px-1.5 py-0.2 rounded border border-emerald-300">
+                {user.ngoAffiliationCode || 'ONG-ANADER-NAWA'}
+              </span>
+            </div>
           </div>
 
           <form onSubmit={handleLoginSubmit} className="space-y-3 text-center">
@@ -677,6 +720,12 @@ export const AppSimulator: React.FC<AppSimulatorProps> = ({ onNavigate }) => {
                     <div>
                       <span className="text-[7px] text-emerald-300/80 uppercase font-bold block">Titulaire</span>
                       <p className="font-bold text-white text-xs">{user.name}</p>
+                    </div>
+                    <div>
+                      <span className="text-[7px] text-amber-300/90 uppercase font-bold block">ID Rattachement ONG</span>
+                      <span className="font-mono text-[10px] font-extrabold text-amber-300 bg-emerald-950/80 px-1.5 py-0.2 rounded border border-amber-400/40 inline-block">
+                        {user.ngoAffiliationCode || 'ONG-ANADER-NAWA'}
+                      </span>
                     </div>
                     <div className="flex justify-between text-[9px] text-stone-200">
                       <span>Région : {user.region}</span>

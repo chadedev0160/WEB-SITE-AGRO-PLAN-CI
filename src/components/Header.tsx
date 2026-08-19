@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({ activeRoute, onNavigate }) => {
           </nav>
 
           {/* ================================================================= */}
-          {/* ACTIONS RAPIDES : ESPACE ONG & CONTACT                            */}
+          {/* ACTIONS RAPIDES : ESPACE ONG, DASHBOARD & CONTACT                 */}
           {/* ================================================================= */}
           <div className="hidden md:flex items-center gap-2 shrink-0">
             
@@ -100,14 +100,29 @@ export const Header: React.FC<HeaderProps> = ({ activeRoute, onNavigate }) => {
             <button
               onClick={() => handleNavigateItem('ngo-portal')}
               id="header-ngo-portal-btn"
-              className={`text-xs font-bold px-4 py-2 rounded-full transition-all flex items-center gap-2 border cursor-pointer shadow-xs ${
+              className={`text-xs font-bold px-3.5 py-2 rounded-full transition-all flex items-center gap-1.5 border cursor-pointer ${
                 activeRoute === 'ngo-portal'
                   ? 'bg-[#5D4037] text-white border-[#5D4037]'
-                  : 'bg-[#2E7D32] hover:bg-[#236327] text-white border-[#2E7D32]'
+                  : 'bg-white hover:bg-stone-50 text-stone-800 border-stone-300'
               }`}
             >
-              <i className="fa-solid fa-building-ngo text-xs"></i>
+              <i className="fa-solid fa-building-ngo text-xs text-[#2E7D32]"></i>
               <span>Espace ONG</span>
+            </button>
+
+            {/* Bouton Ouvrir le Dashboard sur une autre page */}
+            <button
+              onClick={() => {
+                // Open standalone dashboard in a new tab/window
+                window.open('/dashboard', '_blank');
+              }}
+              id="header-dashboard-new-tab-btn"
+              className="text-xs font-bold px-4 py-2 rounded-full transition-all flex items-center gap-2 border border-[#2E7D32] bg-[#2E7D32] hover:bg-[#236327] text-white shadow-xs cursor-pointer group"
+              title="Ouvrir la console de supervision dans une nouvelle page"
+            >
+              <i className="fa-solid fa-chart-line text-xs text-emerald-200 group-hover:scale-110 transition-transform"></i>
+              <span>Dashboard</span>
+              <i className="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-80"></i>
             </button>
 
           </div>
@@ -117,11 +132,13 @@ export const Header: React.FC<HeaderProps> = ({ activeRoute, onNavigate }) => {
           {/* ================================================================= */}
           <div className="flex md:hidden items-center gap-1.5">
             <button
-              onClick={() => handleNavigateItem('ngo-portal')}
-              className="bg-[#5D4037] text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              onClick={() => window.open('/dashboard', '_blank')}
+              className="bg-[#2E7D32] text-white px-2.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              title="Ouvrir le Dashboard dans un nouvel onglet"
             >
-              <i className="fa-solid fa-building-ngo text-xs"></i>
-              <span>ONG</span>
+              <i className="fa-solid fa-chart-line text-xs"></i>
+              <span>Dashboard</span>
+              <i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
             </button>
 
             <button
@@ -165,18 +182,32 @@ export const Header: React.FC<HeaderProps> = ({ activeRoute, onNavigate }) => {
             </p>
 
             <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                window.open('/dashboard', '_blank');
+              }}
+              className="w-full text-left text-xs font-bold py-3 px-3.5 rounded-xl flex items-center justify-between border cursor-pointer bg-[#2E7D32] text-white border-[#2E7D32] shadow-sm"
+            >
+              <span className="flex items-center gap-2">
+                <i className="fa-solid fa-chart-line text-sm text-emerald-200"></i>
+                <span>Ouvrir le Dashboard dans un nouvel onglet</span>
+              </span>
+              <i className="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+            </button>
+
+            <button
               onClick={() => handleNavigateItem('ngo-portal')}
-              className={`w-full text-left text-xs font-bold py-3 px-3.5 rounded-xl flex items-center justify-between border cursor-pointer ${
+              className={`w-full text-left text-xs font-bold py-2.5 px-3.5 rounded-xl flex items-center justify-between border cursor-pointer ${
                 activeRoute === 'ngo-portal'
                   ? 'bg-[#E8F5E9] text-[#2E7D32] border-[#C8E6C9]'
-                  : 'bg-[#2E7D32] text-white border-[#2E7D32]'
+                  : 'bg-stone-50 text-stone-800 border-stone-200'
               }`}
             >
               <span className="flex items-center gap-2">
-                <i className="fa-solid fa-building-ngo text-sm"></i>
-                <span>Accéder à l'Espace ONG & ANADER</span>
+                <i className="fa-solid fa-building-ngo text-sm text-[#2E7D32]"></i>
+                <span>Portail Partenaire ONG & Inscription</span>
               </span>
-              <i className="fa-solid fa-chevron-right text-xs"></i>
+              <i className="fa-solid fa-chevron-right text-xs text-stone-400"></i>
             </button>
 
             <button
